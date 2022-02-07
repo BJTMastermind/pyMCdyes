@@ -11,6 +11,9 @@ def hc(s):
 def ch(c):
     return ('#' + hex(c.r)[2:].rjust(2,'0') + hex(c.g)[2:].rjust(2,'0') + hex(c.b)[2:].rjust(2,'0')).upper()
 
+def dc(r):
+    return int(ch(r).replace("#",""), 16)
+
 def avg_color(colors, l=None):
     if not l:
         l = len(colors)
@@ -38,7 +41,7 @@ def init_bases(dye_dict):
     new_colors, new_mods = dict(), [dict() for x in range(9)]
     print("Generating map key (SLOW - takes a minute) ...")
     for count in range(8,0,-1):
-        print("... Level %s of 8 ..." % count)
+        print(f"... Level {count} of 8 ...")
         for dye_set in combinations_with_replacement(list(dye_dict.items()), count):
             new_color_name = '[' + ' + '.join(map(lambda x: x[1], dye_set)) + ']'
             new_color_avg  = avg_color(list(map(lambda x: x[0], dye_set)))
@@ -52,7 +55,7 @@ def init_bases(dye_dict):
     print("... Done!")
     stop = time.time()
     # Offer to save time by caching
-    print("NOTE: This process took %0.2f seconds to complete." % (stop - start))
+    print(f"NOTE: This process took {round(stop - start, 2)} seconds to complete.")
     print("For the cost of ~95MB of storage, would you like to cache these results?")
     print("(Average speedup time for loading cached results: 5x times faster - or more!)")
     response = input("[N/y]: ").strip().lower()
@@ -88,7 +91,7 @@ def init_cached_bases():
     for line in f:
         i,r,g,b,n = line.split('\t')
         if old_level != i:
-            print("... Level %s of 8 ..." % i)
+            print(f"... Level {i} of 8 ...")
             old_level = i
         cached_base_mods[int(i)].append((col(int(r),int(g),int(b)), n[:-1]))
     f.close()
@@ -287,32 +290,37 @@ def try_offer_alternative(target_c):
         max_dist = 256
         t_c = next_pixel_in_3d(target_c, col(127,127,127))
         if t_c:
-            print("Towards gray: %s - %s" % (ch(t_c), t_c))
+            print(f"Towards gray: {(ch(t_c))} - {t_c}")
             max_dist = min(dist_3d(t_c, target_c), max_dist)
         t_c = next_pixel_in_3d(target_c, col(255,255,255))
         if t_c:
-            print("Towards white: %s - %s" % (ch(t_c), t_c))
+            print(f"Towards white: {(ch(t_c))} - {t_c}")
             max_dist = min(dist_3d(t_c, target_c), max_dist)
         v_c = vector_projection(target_c)
         if v_c:
             t_c = next_pixel_in_3d(target_c, v_c)
             if t_c:
-                print("Projection mapped to black->white: %s - %s" % (ch(t_c), t_c))
+                print(f"Projection mapped to black->white: {(ch(t_c))} - {t_c}")
                 max_dist = min(dist_3d(t_c, target_c), max_dist)
         t_c = next_pixel_in_3d(target_c, col(25,25,25))
         if t_c:
-            print("Towards black: %s - %s" % (ch(t_c), t_c))
+            print(f"Towards black: {(ch(t_c))} - {t_c}")
             max_dist = min(dist_3d(t_c, target_c), max_dist)
         closest_c = cube_search(target_c, max_dist)
         if closest_c:
             c_dist, t_cs = closest_c
-            print("The following", len(t_cs), "closest colors were found at a distance of:", c_dist)
-            print(",\n".join([("  " + ", ".join(["%s - %s" % (ch(x), x) for x in t_cs[i:i+2]])) for i in range(0, len(t_cs), 2)]))
+            print(f"The following {len(t_cs)} closest colors were found at a distance of: {c_dist}")
+            print(",\n".join([("  " + ", ".join([f"{ch(x)} - {x}" for x in t_cs[i:i+2]])) for i in range(0, len(t_cs), 2)]))
+
+        print("\nIs the color you want not possible with dyes?")
+        print("Here are creative mode give commands:\n-------------------------------------")
+        print(f"1.13+: /give @p leather_chestplate{{display:{{color:{dc(target_c)}}}}} 1")
+        print(f"1.7.2-1.12.2: /give @p leather_chestplate 1 0 {{display:{{color:{dc(target_c)}}}}}")
     print("")
 
 
 def pprint_ancestry(target_c, DEBUG=False):
-    print("Goal color: %s - %s" % (ch(target_c), target_c))
+    print(f"Goal color: {ch(target_c)} - {target_c}")
     print("Checking ...")
     ancestry = get_color_ancestry(target_c)
     if not ancestry:
@@ -321,18 +329,21 @@ def pprint_ancestry(target_c, DEBUG=False):
     else:
         print("... FOUND!\n")
         print("(Apply these dye sets, in order, starting with a new leather item!)")
-        print("\nRecipe for color:\n-----------------")
+        print("\nRecipe for color (12w34a Snapshot of 1.4.2):\n--------------------------------------------")
         for rgb, dyes in ancestry:
             if DEBUG:
-                print("- %s \\\\ %s - %s" % (dyes, ch(rgb), rgb))
+                print(f"- {dyes} \\\\ {ch(rgb)} - {rgb}\n")
             else:
-                print("- %s" % dyes)
+                print(f"- {dyes}\n")
         result,target = verify_ancestry(target_c)
+        print("Creative mode give commands:\n----------------------------")
+        print(f"1.13+: /give @p leather_chestplate{{display:{{color:{dc(target_c)}}}}} 1")
+        print(f"1.7.2-1.12.2: /give @p leather_chestplate 1 0 {{display:{{color:{dc(target_c)}}}}}")
         if (target == result):
             print("\nRecipe Verified: GOOD\n")
         else:
-            print("\nRecipe Verified: ERROR!! (please let pudquick@github-or-r/minecraft know!)")
-            print("Problem color in question:", target_c)
+            print("\nRecipe Verified: ERROR!! (please let BJTMastermind know on github!)")
+            print(f"Problem color in question: {target_c}")
             sys.exit(1)
 
 def init_main():
@@ -346,7 +357,7 @@ def init_main():
             # Cache mismatch, redo
             base_colors, base_mods = init_bases(dyes)
     else:
-        base_colors, base_mods = init_bases(dyes)        
+        base_colors, base_mods = init_bases(dyes)
     print("[4,001,584 color recipes loaded]\n")
 
 def main():
@@ -365,3 +376,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
