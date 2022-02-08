@@ -1,7 +1,7 @@
-# pyMCdyes 
+# pyMCdyes 2.0 [Under Development]
 <i>Explore 4 million+ leather dye recipes for Minecraft: Java Edition - Instantly!</i><hr>
 
-**pyMCdyes** is an interactive python script for exploring just slightly more than 4 million pre-calculated dye color recipes for dyeing leather armor in Minecraft: Java Edition. For more information about why I believe this to be 99.99999%+ of the possible colors you can reach, please visit: https://bjtmastermind.github.io/pyMCdyes
+**pyMCdyes 2.0** is an interactive python script for exploring just slightly more than 4 million pre-calculated dye color recipes for dyeing leather armor in Minecraft: Java Edition. For more information about why I believe this to be 99.99999%+ of the possible colors you can reach, please visit: https://bjtmastermind.github.io/pyMCdyes
 
 ## How to Use
 Assuming you have python 3.9.x (haven't tested it with older 3.x versions), download the script and the associated .zip file and place them in the same directory.
@@ -9,11 +9,11 @@ Assuming you have python 3.9.x (haven't tested it with older 3.x versions), down
 Then simply type this to start exploring colors: <br>
 Windows:
 ```cmd
-python pymcdyes.py
+python pymcdyes-2.0.py
 ```
 Linux:
 ```
-python3 pymcdyes.py
+python3 pymcdyes-2.0.py
 ```
 
 ## For Developers
@@ -23,8 +23,7 @@ There are some basic functions in the script and you're more than welcome to use
 
 ## Credits
 
-- Original Python 2 version of pyMCdyes was written by [pudquick](https://github.com/pudquick/pyMCdyes)
-- Updated Python 3 version of pyMCdyes is by [BJTMastermind](https://github.com/BJTMastermind/pyMCdyes)
+- pyMCdyes 2.0 is written by [BJTMastermind](https://github.com/BJTMastermind/pyMCdyes)
 
 ## License
 
