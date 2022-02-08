@@ -2,14 +2,14 @@ import zipfile, sys, os.path, time
 from collections import namedtuple
 from itertools import combinations_with_replacement
 
-col = namedtuple('col', 'r g b')
+col = namedtuple("col", "r g b")
 color_map, base_colors, base_mods = None, None, None
 
 def hc(s):
-    return col(*[int(x,16) for x in list(map(''.join, list(zip(*[iter(s.strip().lstrip('#'))]*2))))])
+    return col(*[int(x,16) for x in list(map("".join, list(zip(*[iter(s.strip().lstrip("#"))]*2))))])
 
 def ch(c):
-    return ('#' + hex(c.r)[2:].rjust(2,'0') + hex(c.g)[2:].rjust(2,'0') + hex(c.b)[2:].rjust(2,'0')).upper()
+    return ("#" + hex(c.r)[2:].rjust(2,"0") + hex(c.g)[2:].rjust(2,"0") + hex(c.b)[2:].rjust(2,"0")).upper()
 
 def dc(r):
     return int(ch(r).replace("#",""), 16)
@@ -19,22 +19,22 @@ def avg_color(colors, l=None):
         l = len(colors)
     return col(sum([c.r for c in colors]) // l, sum([c.g for c in colors]) // l, sum([c.b for c in colors]) // l)
 
-dyes = {hc('#191919'): 'Ink Sac',
-        hc('#CC4C4C'): 'Rose Red',
-        hc('#667F33'): 'Cactus Green',
-        hc('#7F664C'): 'Cocoa Beans',
-        hc('#3366CC'): 'Lapis Lazuli',
-        hc('#B266E5'): 'Purple Dye',
-        hc('#4C99B2'): 'Cyan Dye',
-        hc('#999999'): 'Light Gray Dye',
-        hc('#4C4C4C'): 'Gray Dye',
-        hc('#F2B2CC'): 'Pink Dye',
-        hc('#7FCC19'): 'Lime Dye',
-        hc('#E5E533'): 'Dandelion Yellow',
-        hc('#99B2F2'): 'Light Blue Dye',
-        hc('#E57FD8'): 'Magenta Dye',
-        hc('#F2B233'): 'Orange Dye',
-        hc('#FFFFFF'): 'Bone Meal'}
+dyes = {hc("#191919"): "Ink Sac",
+        hc("#CC4C4C"): "Rose Red",
+        hc("#667F33"): "Cactus Green",
+        hc("#7F664C"): "Cocoa Beans",
+        hc("#3366CC"): "Lapis Lazuli",
+        hc("#B266E5"): "Purple Dye",
+        hc("#4C99B2"): "Cyan Dye",
+        hc("#999999"): "Light Gray Dye",
+        hc("#4C4C4C"): "Gray Dye",
+        hc("#F2B2CC"): "Pink Dye",
+        hc("#7FCC19"): "Lime Dye",
+        hc("#E5E533"): "Dandelion Yellow",
+        hc("#99B2F2"): "Light Blue Dye",
+        hc("#E57FD8"): "Magenta Dye",
+        hc("#F2B233"): "Orange Dye",
+        hc("#FFFFFF"): "Bone Meal"}
 
 def init_bases(dye_dict):
     start = time.time()
@@ -43,7 +43,7 @@ def init_bases(dye_dict):
     for count in range(8,0,-1):
         print(f"... Level {count} of 8 ...")
         for dye_set in combinations_with_replacement(list(dye_dict.items()), count):
-            new_color_name = '[' + ' + '.join(map(lambda x: x[1], dye_set)) + ']'
+            new_color_name = "[" + " + ".join(map(lambda x: x[1], dye_set)) + "]"
             new_color_avg  = avg_color(list(map(lambda x: x[0], dye_set)))
             new_color_sum  = avg_color(list(map(lambda x: x[0], dye_set)), 1)
             new_colors[new_color_avg] = new_color_name
@@ -61,12 +61,12 @@ def init_bases(dye_dict):
     response = input("[N/y]: ").strip().lower()
     if (response in ["yes", "y"]):
         print("Saving base_colors.cache ...")
-        f = open('base_colors.cache','wb')
+        f = open("base_colors.cache","wb")
         for x_c, x_n in new_colors:
             f.write(bytes(f"{x_c.r}\t{x_c.g}\t{x_c.b}\t{x_n}\n", "utf-8"))
         f.close()
         print("Saving base_mods.cache ...")
-        f = open('base_mods.cache','wb')
+        f = open("base_mods.cache","wb")
         for i in range(8,0,-1):
             for x_c, x_n in new_mods[i]:
                 f.write(bytes(f"{i}\t{x_c.r}\t{x_c.g}\t{x_c.b}\t{x_n}\n", "utf-8"))
@@ -79,17 +79,17 @@ def init_bases(dye_dict):
 def init_cached_bases():
     print("Reading cached map key (SPEEDY-ISH - takes a few seconds) ...")
     cached_base_colors = []
-    f = open('base_colors.cache','r')
+    f = open("base_colors.cache","r")
     for line in f:
-        r,g,b,n = line.split('\t')
+        r,g,b,n = line.split("\t")
         cached_base_colors.append((col(int(r),int(g),int(b)), n[:-1]))
     f.close()
     cached_base_colors = tuple(cached_base_colors)
     cached_base_mods = [[] for x in range(9)]
-    f = open('base_mods.cache','r')
+    f = open("base_mods.cache","r")
     old_level = ""
     for line in f:
-        i,r,g,b,n = line.split('\t')
+        i,r,g,b,n = line.split("\t")
         if old_level != i:
             print(f"... Level {i} of 8 ...")
             old_level = i
@@ -103,13 +103,13 @@ def init_cached_bases():
         return [cached_base_colors, cached_base_mods]
     else:
         print("... ERROR in cache! ... rebuilding ...")
-        raise exceptions.Exception('Cache Mismatch')
+        raise exceptions.Exception("Cache Mismatch")
 
 
 def init_color_map():
     print("Loading color map (FAST) ...")
-    archive = zipfile.ZipFile('color_map.zip', 'r')
-    f_map  = archive.open('color_map.bytearray')
+    archive = zipfile.ZipFile("color_map.zip", "r")
+    f_map  = archive.open("color_map.bytearray")
     new_map = bytearray(f_map.read())
     f_map.close()
     archive.close()
@@ -146,7 +146,7 @@ def verify_ancestry(target_c):
     a_chain = get_color_ancestry(target_c)
     new_c = a_chain[0][0]
     for dye_set, dye_name in a_chain[1:]:
-        new_c = avg_color([new_c, dye_set], dye_name.count('+') + 2)
+        new_c = avg_color([new_c, dye_set], dye_name.count("+") + 2)
     return (new_c, target_c)
 
 def color_exists(target_c):
@@ -285,7 +285,7 @@ def cube_search(target_c, max_dist=255):
 
 def try_offer_alternative(target_c):
     instr = input("Look for a closest match? [Y/n]: ").strip().lower()
-    if instr not in ['n', 'no', 'quit', 'q']:
+    if instr not in ["n", "no", "quit", "q"]:
         print("Suggested closest colors:\n-------------------------")
         max_dist = 256
         t_c = next_pixel_in_3d(target_c, col(127,127,127))
@@ -349,7 +349,7 @@ def pprint_ancestry(target_c, DEBUG=False):
 def init_main():
     global color_map, base_colors, base_mods
     color_map = init_color_map()
-    if (os.path.exists('base_colors.cache') and os.path.exists('base_mods.cache')):
+    if (os.path.exists("base_colors.cache") and os.path.exists("base_mods.cache")):
         try:
             # Attempt loading cache
             base_colors, base_mods = init_cached_bases()
@@ -364,7 +364,7 @@ def main():
     init_main()
     while True:
         instr = input("[Enter RRGGBB hex color to find or Q to quit]: ").strip().lower()
-        if instr in ['q','quit','exit']:
+        if instr in ["q","quit","exit"]:
             break
         else:
             print()
